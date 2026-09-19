@@ -21,11 +21,15 @@ phases:
       - chmod +x ec2-dist/postScript.sh
 
 artifacts:
-  base-directory: s3-dist
   files:
     - '**/*'
 
   secondary-artifacts:
+    BuildArtifact:
+      base-directory: s3-dist
+      files:
+        - '**/*'
+
     BuildArtifactEC2:
       base-directory: ec2-dist
       files:
