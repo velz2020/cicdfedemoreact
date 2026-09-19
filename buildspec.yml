@@ -7,12 +7,26 @@ phases:
 
   build:
     commands:
-      - npm run build
-      - chmod +x postScript.sh
-      - cp postScript.sh dist/postScript.sh
+      # S3 build
+      - VITE_BASE_URL=/ npm run build
+      - mkdir -p s3-dist ec2-dist
+      - cp -r dist/* s3-dist/
+
+      # EC2 build
+      - VITE_BASE_URL=/frontend/ npm run build
+      - cp -r dist/* ec2-dist/
+
+      # Required by EC2 Deploy action
+      - cp postScript.sh ec2-dist/postScript.sh
+      - chmod +x ec2-dist/postScript.sh
 
 artifacts:
-  base-directory: dist
+  base-directory: s3-dist
   files:
     - '**/*'
-    
+
+  secondary-artifacts:
+    BuildArtifactEC2:
+      base-directory: ec2-dist
+      files:
+        - '**/*'
